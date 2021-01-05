@@ -1,0 +1,52 @@
+version: '3.2'
+
+services:
+  nginx:
+    build: ./docker-images/nginx/${NGINX_VERSION}
+    container_name: nginx
+    restart: always
+    ports:
+      - 80:80
+#      - 443:443
+    volumes:
+      - ./configs/nginx/${NGINX_VERSION}:/etc/nginx/conf.d
+      - ./..:/var/www/html
+      - ./logs/nginx/${NGINX_VERSION}:/var/log/nginx
+    environment:
+      - NGINX_HOST=${NGINX_HOST}
+    links:
+      - php
+      - mysql
+
+  php:
+    build: ./docker-images/php/${PHP_VERSION}
+    container_name: php
+    restart: always
+    volumes:
+      - ./configs/php/${PHP_VERSION}/php.ini:/usr/local/etc/php/conf.d/php.ini
+      - ./..:/var/www/html
+    links:
+      - mysql
+
+  mysql:
+    build: ./docker-images/mysql/${MYSQL_VERSION}
+    container_name: mysql
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - ./data/mysql/${MYSQL_VERSION}:/var/lib/mysql
+      - ./logs/mysql/${MYSQL_VERSION}:/var/log/mysql
+    environment:
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+
+  adminer:
+    image: adminer:4
+    container_name: adminer
+    restart: always
+    ports:
+      - 8080:8080

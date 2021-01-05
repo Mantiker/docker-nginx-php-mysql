@@ -1,0 +1,7 @@
+.idea
+
+/data/mysql/5.7/*
+!/data/mysql/5.7/.gitkeep
+
+/logs/*/*/*
+!/logs/*/*/.gitkeep
